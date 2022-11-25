@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ef123467-98db-4d4a-9112-6dd6eea63724" name="Changes" comment="Google Cluster GCN">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn/inits.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn/louvain_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn/metrics.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn/models.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn/partition_utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn_ori/clustergcn.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn_ori/clustering.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn_ori/layers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn_ori/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn_ori/parsor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cluster_gcn_ori/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cluster_gcn/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/cluster_gcn/train.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2HcMq3S07DScggdfmcHczg6v0sB" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.mappings&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.highlight.symlinks&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.date&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.permissions&quot;: &quot;false&quot;,
+    &quot;WebServerToolWindowPanel.toolwindow.show.size&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Coding/Projects/Python/botnet-detection-master/cluster_gcn&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Coding\Projects\Python\botnet-detection-master\cluster_gcn" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Coding\Projects\Python\botnet-detection-master\cluster_gcn_ori" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ef123467-98db-4d4a-9112-6dd6eea63724" name="Changes" comment="" />
+      <created>1668580105775</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1668580105775</updated>
+      <workItem from="1668580108327" duration="10811000" />
+      <workItem from="1668667551503" duration="24134000" />
+      <workItem from="1669018754913" duration="548000" />
+      <workItem from="1669025094369" duration="739000" />
+      <workItem from="1669375687726" duration="8227000" />
+    </task>
+    <task id="LOCAL-00001" summary="Google Cluster GCN">
+      <created>1669382558714</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1669382558714</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Google Cluster GCN" />
+    <option name="LAST_COMMIT_MESSAGE" value="Google Cluster GCN" />
+  </component>
+</project>

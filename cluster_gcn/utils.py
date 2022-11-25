@@ -232,7 +232,6 @@ def load_botnet_data(partition_method='Metis'):
     # 将全图节点全部归入训练集
     train_data = np.arange(0, num_data)
     train_adj = full_adj
-
     # 将全图归入测试集、验证集
     train_feats = test_feats = full_adj
     val_data = test_data = train_data

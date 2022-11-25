@@ -135,6 +135,8 @@ def evaluate(sess, model, val_features_batches, val_support_batches,
 
 def main(unused_argv):
     """Main function for running experiments."""
+    import os
+    os.environ['NUMEXPR_MAX_THREADS'] = '80'
     # Load data
     (train_adj, full_adj, train_feats, test_feats, y_train, y_val, y_test,
      train_mask, val_mask, test_mask, _, val_data, test_data, num_data,
