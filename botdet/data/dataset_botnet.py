@@ -1,4 +1,3 @@
-import os
 import os.path as osp
 import pickle
 
@@ -8,7 +7,7 @@ import numpy as np
 from tqdm import tqdm
 from torch.utils.data import Dataset
 
-from .url_utils import makedirs, decide_download, download_url, extract_tar
+from .url_utils import makedirs, extract_tar
 from .data_utils import (h5group_to_dict, build_graph_from_dict_pyg,
                          build_graph_from_dict_dgl, build_graph_from_dict_nx)
 
@@ -61,8 +60,6 @@ class BotnetDataset(Dataset):
         self.split_idx = split_idx
         self.add_nfeat_ones = add_nfeat_ones
 
-        self.download()
-
         self.process()
 
         self.in_memory = in_memory
@@ -73,17 +70,13 @@ class BotnetDataset(Dataset):
             self.path = self.processed_paths[1]
         elif split == 'test':
             self.path = self.processed_paths[2]
+        # print(self.processed_paths)
+        # exit(0)
 
-        if in_memory:
-            self.data = dd.io.load(self.path)  # dictionary
-            self.data_type = 'dict'
-            self.num_graphs = self.data['num_graphs']
-        else:
-            # self.data = h5py.File(self.path, 'r')
-            self.data = None    # defer opening file in each process to make multiprocessing work
-            self.data_type = 'file'
-            with h5py.File(self.path, 'r') as f:
-                self.num_graphs = f.attrs['num_graphs']
+        # in-memory load
+        self.data = dd.io.load(self.path)  # dictionary
+        self.data_type = 'dict'
+        self.num_graphs = self.data['num_graphs']
 
     @property
     def raw_dir(self):
@@ -119,23 +112,6 @@ class BotnetDataset(Dataset):
     @property
     def graph_format(self):
         return self._graph_format
-
-    def download(self):
-        if osp.exists(self.raw_paths[0]) or files_exist(self.raw_paths[1:3]):
-            return
-
-        if files_exist(self.processed_paths):
-            return
-
-        makedirs(self.raw_dir)
-
-        if decide_download(self.url):
-            path = download_url(self.url, self.raw_dir)
-            extract_tar(path, self.raw_dir)
-            os.unlink(path)
-        else:
-            print("Stop download.")
-            exit(-1)
 
     def process(self):
         if files_exist(self.processed_paths):

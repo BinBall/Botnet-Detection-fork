@@ -4,7 +4,10 @@ import os
 import random
 import sys
 
+import numpy as np
 import torch
+import networkx as nx
+import deepdish as dd
 
 from botdet.eval.evaluation import eval_metrics, eval_predictor, PygModelPredictor
 from botdet.optim.train_utils import time_since, logging_config
@@ -131,6 +134,11 @@ def train(model, args, train_loader, val_dataset, test_dataset, optimizer, crite
         num_train_graph = 0
         model.train()
         for n, batch in enumerate(train_loader):
+            print(batch)
+
+            print(type(batch))
+
+            exit(0)
             batch.to(device)
 
             optimizer.zero_grad()
@@ -189,6 +197,57 @@ def train(model, args, train_loader, val_dataset, test_dataset, optimizer, crite
 
 
 if __name__ == '__main__':
+    start_time = time.time()
+    train_data = dd.io.load('data/botnet/processed/leet_train.hdf5')
+    num_graphs = train_data["num_graphs"]
+    edges = []
+    num_all_nodes = 0
+    full_graph = nx.MultiGraph()
+    single_graph = nx.MultiGraph()
+    print(f'num_graphs={num_graphs}')
+    print(f'Data loaded({time.time()-start_time:.2f} seconds, start composing graphs...)')
+    start_time = time.time()
+    for graph_index in range(1):
+        cycle_start_time = time.time()
+        edge_idx = train_data[str(graph_index)]["edge_index"]
+        for i in range(len(edge_idx[0])):
+            edges.append([edge_idx[0][i] + num_all_nodes, edge_idx[1][i] + num_all_nodes])
+        single_graph.add_edges_from(edges)
+        # single_graph = nx.MultiGraph(edges)
+        print(f'single_graph={single_graph}, {time.time()-cycle_start_time:.2f} seconds')
+        full_graph = nx.compose(full_graph, single_graph)
+        print(f'{graph_index}th compose finished, passed {time.time() - start_time:.2f} seconds')
+        print(f'edges uses {sys.getsizeof(edges)//1000000} MB memory, single_graph uses {sys.getsizeof(single_graph)//1000000} MB memory')
+        edges.clear()
+        single_graph.clear()
+        num_all_nodes += len(train_data[str(graph_index)]["y"])
+    print(f'full_graph={full_graph}, {time.time() - start_time:.2f} seconds, using {sys.getsizeof(full_graph)//1000000} MB memory')
+    exit(0)
+    # print(train_data.keys())
+    # index_max, index_min = 0, 0
+    # for n in range(train_data["num_graphs"]):
+    #     num_y = len(train_data[str(n)]["y"])
+    #     if num_y > len(train_data[str(index_max)]["y"]):
+    #         index_max = n
+    #     if num_y < len(train_data[str(index_max)]["y"]):
+    #         index_min = n
+    # print(f'The biggest graph is graph {index_max}, which contains {len(train_data[str(index_max)]["y"])} nodes and {len(train_data[str(index_max)]["edge_index"][1])} edges')
+    # print(f'The smallest graph is graph {index_min}, which contains {len(train_data[str(index_min)]["y"])} nodes and {len(train_data[str(index_min)]["edge_index"][1])} edges')
+
+    # print(f'contains_self_loops={train_data["contains_self_loops"]}')
+    # print(f'is_directed={train_data["is_directed"]}')
+    # print(f'num_edges_avg={train_data["num_edges_avg"]}')
+    # print(f'num_evil_edges_avg={train_data["num_evil_edges_avg"]}')
+    # print(f'num_evils_avg={train_data["num_evils_avg"]}')
+    # print(f'num_graphs={train_data["num_graphs"]}')
+    # print(f'num_nodes_avg={train_data["num_nodes_avg"]}')
+    # # print(f'ori_graph_ids={train_data["ori_graph_ids"]}')
+    # print(f'{train_data["0"]["edge_index"]}')
+    #
+    # G = nx.from_dict_of_dicts(train_data["0"], multigraph_input=True)
+    # print(len(G.nodes))
+    # print(len(G.edges))
+
     args = parse_args()
     os.makedirs(args.save_dir, exist_ok=True)
 
@@ -217,6 +276,9 @@ if __name__ == '__main__':
 
     train_ds = BotnetDataset(name=args.data_name, root=args.data_dir, split='train',
                              in_memory=bool(args.in_memory), graph_format='pyg')
+
+    #print(train_ds.data['0'])
+
     val_ds = BotnetDataset(name=args.data_name, root=args.data_dir, split='val',
                              in_memory=bool(args.in_memory), graph_format='pyg')
     test_ds = BotnetDataset(name=args.data_name, root=args.data_dir, split='test',
