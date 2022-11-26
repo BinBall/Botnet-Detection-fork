@@ -54,6 +54,10 @@ flags.DEFINE_float(
     'diag_lambda', 1,
     'A positive number for diagonal enhancement, -1 indicates normalization without diagonal enhancement'
 )
+flags.DEFINE_float(
+    'train_ratio', -1,
+    'A positive number for dataset partition, negative for no partition'
+)
 flags.DEFINE_bool('multilabel', True, 'Multilabel or multiclass.')
 flags.DEFINE_bool('layernorm', True, 'Whether to use layer normalization.')
 flags.DEFINE_bool(
@@ -63,11 +67,11 @@ flags.DEFINE_bool('validation', True,
                   'Print validation accuracy after each epoch.')
 
 
-def load_data(data_prefix, dataset_str, precalc, partition_method):
+def load_data(data_prefix, dataset_str, precalc, partition_method, train_ratio):
     """Return the required data formats for GCN models."""
     if dataset_str == 'botnet':
         (num_data, train_adj, full_adj, feats, train_feats, test_feats, labels,
-         train_data, val_data, test_data, train_graph, full_graph) = utils.load_botnet_data(partition_method=partition_method)
+         train_data, val_data, test_data, train_graph, full_graph) = utils.load_botnet_data(train_ratio, partition_method)
     else:
         (num_data, train_adj, full_adj, feats, train_feats, test_feats, labels,
          train_data, val_data, test_data, train_graph, full_graph) = utils.load_graphsage_data(data_prefix, dataset_str, partition_method=partition_method)
@@ -140,7 +144,7 @@ def main(unused_argv):
     # Load data
     (train_adj, full_adj, train_feats, test_feats, y_train, y_val, y_test,
      train_mask, val_mask, test_mask, _, val_data, test_data, num_data,
-     visible_data, train_graph, full_graph) = load_data(FLAGS.data_prefix, FLAGS.dataset, FLAGS.precalc, FLAGS.partition_method)
+     visible_data, train_graph, full_graph) = load_data(FLAGS.data_prefix, FLAGS.dataset, FLAGS.precalc, FLAGS.partition_method, FLAGS.train_ratio)
     # print(f'train_adj.shape={train_adj.get_shape}, full_adj.shape={full_adj.get_shape}')
     # print(f'{train_graph.name} contains {len(train_graph.nodes())} nodes, {full_graph.name} contains {len(train_graph.nodes())} nodes')
     # Partition graph and do preprocessing

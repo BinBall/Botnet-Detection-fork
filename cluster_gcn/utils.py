@@ -201,13 +201,14 @@ def preprocess(adj,
     return parts, features_batches, support_batches, y_train_batches, train_mask_batches
 
 
-def load_botnet_data(partition_method='Metis'):
+def load_botnet_data(train_ratio, partition_method='Metis'):
     import deepdish as dd
     start_time = time.time()
     # 从文件读取数据集
     print('Start load data...')
-    train_data = dd.io.load('data/botnet/processed/c2_train.hdf5')['0']
-    edge_idx = train_data["edge_index"]
+    dataset = dd.io.load('data/botnet/processed/c2_train.hdf5')['0']
+
+    edge_idx = dataset["edge_index"]
     print(f'Data loaded({time.time() - start_time:.2f} s), start preprocessing...')
     start_time = time.time()
     # 构造边集
@@ -221,20 +222,78 @@ def load_botnet_data(partition_method='Metis'):
     full_graph = nx.Graph(edges)
     # 获取图中节点数
     num_data = len(full_graph)
+
+    # 若train_ratio
+    if 0 < train_ratio < 1:
+        partition_time = time.time()
+        num_train_data = int(train_ratio * num_data)
+        # num_test_data = num_data - num_train_data
+        num_eval_data = int(0.1 * num_train_data)
+        node_index = list(full_graph.nodes())
+        np.random.shuffle(node_index)
+
+        count = 0
+        while count < num_data:
+            if count > num_train_data:
+                full_graph.node[node_index[count]]['test'] = True
+                full_graph.node[node_index[count]]['val'] = False
+            else:
+                if count > num_eval_data:
+                    full_graph.node[node_index[count]]['test'] = False
+                    full_graph.node[node_index[count]]['val'] = True
+                else:
+                    full_graph.node[node_index[count]]['test'] = False
+                    full_graph.node[node_index[count]]['val'] = False
+            count += 1
+        print(f'Dataset partition done({time.time()-partition_time:.2f} s)')
+
+    val_data = np.array([n for n in full_graph.nodes() if full_graph.node[n]['val']], dtype=np.int32)
+    test_data = np.array([n for n in full_graph.nodes() if full_graph.node[n]['test']], dtype=np.int32)
+    is_train = np.ones(num_data, dtype=np.bool)
+    is_train[val_data] = False
+    is_train[test_data] = False
+    # train_data记录了属于训练集的节点索引
+    train_data = np.array([n for n in range(num_data) if is_train[n]], dtype=np.int32)
+    train_edges = np.array([(e[0], e[1]) for e in edges if is_train[e[0]] and is_train[e[1]]], dtype=np.int32)
+
+    # 正则化
+    feats = dataset["x"]  # 从数据集中读取特征矩阵
+    # train_feats = feats[train_data]
+    # scaler = sklearn.preprocessing.StandardScaler()
+    # scaler.fit(train_feats)
+    # feats = scaler.transform(feats)
+
     # 将边集转为Numpy, 用于构造稀疏矩阵形式的邻接矩阵
     edges = np.array(edges, dtype=np.int32)
     # 构造稀疏矩阵形式的邻接矩阵
     full_adj = _construct_adj(edges, num_data)
-    # 从数据集中读取特征矩阵
-    feats = train_data["x"]
+
     # 从数据集中读取标签集
-    labels = np.reshape(train_data["y"], (-1, 1))
-    # 将全图节点全部归入训练集
-    train_data = np.arange(0, num_data)
-    train_adj = full_adj
-    # 将全图归入测试集、验证集
-    train_feats = test_feats = full_adj
-    val_data = test_data = train_data
+    labels_origin = np.array(dataset["y"], dtype=np.bool)
+    labels = np.zeros((num_data, 2), dtype=np.float32)
+    for num, label in enumerate(labels_origin):
+        if labels_origin[num]:
+            labels[num][0] = 1
+        else:
+            labels[num][1] = 1
+
+    train_adj = _construct_adj(train_edges, num_data)
+
+    train_feats = feats[train_data]
+    test_feats = feats
+
+    tf.compat.v1.logging.info(f'Data loaded, {time.time() - start_time:.2f} seconds.')
+    if partition_method == 'Louvain':
+        tf.compat.v1.logging.info(f'num_data={num_data}, graph contains {len(full_graph)} nodes')
+    else:
+        train_graph = None
+        full_graph = None
+    ## 将全图节点全部归入训练集
+    # train_data = np.arange(0, num_data)
+
+    # # 将全图归入测试集、验证集
+    # train_feats = test_feats = full_adj
+    # val_data = test_data = train_data
     return num_data, train_adj, full_adj, feats, train_feats, test_feats, \
            labels, train_data, val_data, test_data, full_graph, full_graph
 
@@ -318,15 +377,22 @@ def load_graphsage_data(dataset_path, dataset_str, normalize=True, partition_met
 
     # todo 根据任务为多标签和分类，处理标签
     if isinstance(list(class_map.values())[0], list):
+        # 多标签任务
         num_classes = len(list(class_map.values())[0])
         labels = np.zeros((num_data, num_classes), dtype=np.float32)
         for k in class_map.keys():
             labels[id_map[k], :] = np.array(class_map[k])
     else:
+        # 多分类任务
         num_classes = len(set(class_map.values()))
         labels = np.zeros((num_data, num_classes), dtype=np.float32)
         for k in class_map.keys():
             labels[id_map[k], class_map[k]] = 1
+        print(labels[0])
+        print(labels[1])
+        print(labels[2])
+        exit(0)
+
     # todo 正则化
     if normalize:
         train_ids = np.array([
